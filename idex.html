@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fortune Teller</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: url('https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExYWxpY2V0c2c4Y2F1ZWxrZ2c0dDU3ZmIxNXc2NjFtMzZ5ZDU1NnhkbSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3og0IV7MOCfnm85iRa/giphy.gif') no-repeat center center fixed;
+      background-size: cover;
+      font-family: Arial, sans-serif;
+    }
+
+    .container {
+      text-align: center;
+      background: rgba(25, 0, 50, 0.75);
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+      color: #e0caff;
+      backdrop-filter: blur(4px);
+      position: relative;
+    }
+
+    .fortune-teller {
+      margin-bottom: 20px;
+    }
+
+    input {
+      padding: 10px;
+      margin: 5px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      width: 80%;
+      max-width: 250px;
+    }
+
+    button {
+      padding: 10px 20px;
+      background: linear-gradient(to right, #8f5de8, #5d2bc9);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: linear-gradient(to right, #5d2bc9, #8f5de8);
+      transform: scale(1.05);
+    }
+
+    /* Modal styles */
+    .modal {
+      display: none;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80%;
+      max-width: 400px;
+      background: rgba(25, 0, 50, 0.85);
+      padding: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      text-align: center;
+      border-radius: 12px;
+      color: #e0caff;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(5px);
+      z-index: 10;
+      animation: fadeIn 0.5s ease;
+    }
+
+    /* Positioning modals under the fortune teller */
+    .below-teller {
+      top: 220px; /* adjust depending on your layout */
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .close {
+      color: #e0caff;
+      float: right;
+      font-size: 24px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .close:hover {
+      color: #ffffff;
+      transform: scale(1.2);
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+    <div class="fortune-teller">
+      <img src="Crystal Ball Cat GIF.gif" alt="Fortune Teller" style="width:150px; height:auto; border-radius: 10px;">
+    </div>
+    <input type="text" id="name" placeholder="Enter your name">
+    <input type="number" id="age" placeholder="Enter your age">
+    <br>
+    <button onclick="askQuestion()">OK</button>
+
+    <!-- Question Modal -->
+    <div id="questionModal" class="modal below-teller">
+      <span class="close" onclick="closeModal()">&times;</span>
+      <p id="questionText"></p>
+      <input type="text" id="userQuestion" placeholder="Type your question"><br><br>
+      <button onclick="getFortune()">Ask the Fortune Teller</button>
+    </div>
+
+    <!-- Answer Modal -->
+    <div id="answerModal" class="modal below-teller">
+      <span class="close" onclick="closeAnswerModal()">&times;</span>
+      <p id="fortuneAnswer"></p>
+    </div>
+  </div>
+
+  <script>
+    const goodFortunes = [
+    "The stars say success is on your horizon.",
+    "Hard work will open many doors for you.",
+    "Your mind is sharper than you think.",
+    "Knowledge will be your greatest ally this year.",
+    "A breakthrough is coming in your learning journey.",
+    "Your efforts will soon be rewarded with high marks.",
+    "A mentor will guide you to academic success.",
+    "You will conquer challenges through perseverance.",
+    "A bright academic future awaits you.",
+    "Your curiosity will lead you to greatness."
+  ];
+
+  const badFortunes = [
+    "Your textbooks will gather dust this year.",
+    "I see distractions pulling you away from success.",
+    "A cloud of confusion will shadow your studies.",
+    "You will forget what you learned when it matters most.",
+    "Laziness will be your greatest rival.",
+    "The path to graduation looks very uncertain.",
+    "Missed deadlines will haunt you.",
+    "Beware of procrastination—it lurks nearby.",
+    "Your grades may fall like autumn leaves.",
+    "I sense more Netflix than notebooks ahead."
+  ];
+
+    function askQuestion() {
+      const name = document.getElementById('name').value.trim();
+      const age = document.getElementById('age').value.trim();
+
+      if (!name || !age) {
+        alert("Please enter both your name and age.");
+        return;
+      }
+
+      document.getElementById('questionModal').style.display = 'block';
+      document.getElementById('questionText').innerText = `Hello ${name}, what is your question?`;
+    }
+
+    function getFortune() {
+      const name = document.getElementById('name').value.trim().toLowerCase();
+      const question = document.getElementById('userQuestion').value.trim();
+
+      if (!question) {
+        alert("You must ask a question!");
+        return;
+      }
+
+      let selectedFortune;
+      if (name === "rochelle") {
+        selectedFortune = goodFortunes[Math.floor(Math.random() * goodFortunes.length)];
+      } else {
+        const chance = Math.random();
+        selectedFortune = (chance < 0.3)
+          ? goodFortunes[Math.floor(Math.random() * goodFortunes.length)]
+          : badFortunes[Math.floor(Math.random() * badFortunes.length)];
+      }
+
+      document.getElementById('questionModal').style.display = 'none';
+      document.getElementById('answerModal').style.display = 'block';
+      document.getElementById('fortuneAnswer').innerText = selectedFortune;
+    }
+
+    function closeModal() {
+      document.getElementById('questionModal').style.display = 'none';
+    }
+
+    function closeAnswerModal() {
+      document.getElementById('answerModal').style.display = 'none';
+    }
+  </script>
+
+</body>
+
+</html>
